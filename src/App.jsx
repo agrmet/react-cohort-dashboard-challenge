@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './Components/Navbar/Navbar';
+import Header from './Components/Header/Header';
+import PostFeed from './Components/PostFeed/PostFeed';
+import SinglePostPage from './Components/Post/SingePostPage';
+import { createContext, useEffect, useState} from 'react';
+
+const AppContext = createContext();
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(undefined);
+
+  useEffect(() => {
+    fetch("https://boolean-uk-api-server.fly.dev/agrmet/contact/1")
+    .then((rs) => rs.json())
+    .then(setUser);
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <AppContext.Provider value={user}>
+        <div className='container'>
+          <Header />
+          <div className='container-nav-main'>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<PostFeed />} />
+              <Route path="/post/:id" element={<SinglePostPage />} />
+            </Routes>
+          </div>
+        </div>
+
+      </AppContext.Provider>
+    </Router>
+  );
 }
 
-export default App
+export default App;
